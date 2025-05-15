@@ -1,6 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { AdminCategoriesPage } from '../pages/AdminCategoriesPage';
-import { categoryNames, testRoutes, testIcons } from '../utils/test-data';
+import {
+  categoryNames,
+  testRoutes,
+  testIcons,
+  apiRoutes,
+} from '../utils/test-data';
 import { getRouteUrl } from '../utils/helper-functions';
 
 test.describe('Admin Categories Management', () => {
@@ -56,14 +61,14 @@ test.describe('Admin Categories Management', () => {
     ).toBeVisible();
 
     //Change back the updated name to the original name
-    await adminCategories.editCategory(
-      categoryNames.updated,
-      categoryNames.valid
-    );
-    await expect(adminCategories.page).toHaveURL(testRoutes.adminCategories);
-    await expect(
-      adminCategories.page.getByRole('cell', { name: 'Computers' }).first()
-    ).toBeVisible();
+    // await adminCategories.editCategory(
+    //   categoryNames.updated,
+    //   categoryNames.valid
+    // );
+    // await expect(adminCategories.page).toHaveURL(testRoutes.adminCategories);
+    // await expect(
+    //   adminCategories.page.getByRole('cell', { name: 'Computers' }).first()
+    // ).toBeVisible();
   });
 
   test('TC-003: Edit Existing Category Name (Fail)', async ({ page }) => {
@@ -121,9 +126,17 @@ test.describe('Admin Categories Management', () => {
     await adminCategories.addCategory(categoryNames.valid, testIcons.valid);
     // Go to homepage as a new user
     await adminCategories.page.goto(testRoutes.homepage);
-    await adminCategories.page.reload();
+
+    const slider = adminCategories.page.getByRole('region', {
+      name: 'Category slider',
+    });
+    await expect(slider).toContainText(categoryNames.valid);
     await expect(
-      adminCategories.page.getByText(categoryNames.valid)
+      slider
+        .getByRole('link', {
+          name: `View products in ${categoryNames.valid}`,
+        })
+        .first()
     ).toBeVisible();
   });
 

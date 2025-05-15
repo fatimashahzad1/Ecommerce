@@ -31,7 +31,7 @@ export class AdminCategoriesPage {
       name: /Save|Submit/i,
     });
     this.categoryList = page.getByText(
-      'CategoriesAdd CategoryIconNameParentActionsComputersNo'
+      'CategoriesAdd CategoryIconNameParentActions'
     );
     this.editCategoryButton = (name: string) =>
       page
