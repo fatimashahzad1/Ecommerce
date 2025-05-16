@@ -16,6 +16,11 @@ export const ROUTE_LINKS = {
   flashSaleProducts: '/products/flash-sales',
   bestSellingProducts: '/products/best-selling',
   allProducts: '/products/all',
+  adminDashboard: '/admin',
+  adminCategories: '/admin/categories',
+  adminProducts: '/admin/products',
+  addCategory: '/admin/categories/add',
+  addProduct: '/admin/products/add',
   productDetails: (id: string) => `/products/details?id=${id}`,
 };
 export const MAIN_HEADER_ROUTES = [

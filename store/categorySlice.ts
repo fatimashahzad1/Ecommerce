@@ -41,8 +41,18 @@ export const addCategory = createAsyncThunk<Category, Omit<Category, 'id'>>(
   'categories/addCategory',
   async (category, { rejectWithValue }) => {
     try {
-      const docRef = await addDoc(collection(db, 'categories'), category);
-      return { ...category, id: docRef.id };
+      const response = await fetch('/api/categories', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(category),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to add category');
+      }
+      const data = await response.json();
+      return { ...category, id: data.id };
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -54,8 +64,14 @@ export const updateCategory = createAsyncThunk<Category, Category>(
   async (category, { rejectWithValue }) => {
     try {
       const { id, ...rest } = category;
-      await updateDoc(doc(db, 'categories', id), rest);
-      return category;
+      const response = await fetch(`/api/categories/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(rest),
+      });
+      if (!response.ok) throw new Error('Failed to update category');
+      const data = await response.json();
+      return { ...data };
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -66,7 +82,10 @@ export const deleteCategory = createAsyncThunk<string, string>(
   'categories/deleteCategory',
   async (id, { rejectWithValue }) => {
     try {
-      await deleteDoc(doc(db, 'categories', id));
+      const response = await fetch(`/api/categories/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete category');
       return id;
     } catch (error: any) {
       return rejectWithValue(error.message);
