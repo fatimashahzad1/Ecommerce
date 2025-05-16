@@ -1,4 +1,4 @@
-# Playwright MCP + POM Test Script Generator Prompt (for eCommerce Site)
+# Playwright MCP + POM Test Script Generator Prompt (for {{PROJECT\_NAME}})
 
 ---
 
@@ -13,25 +13,33 @@ You are generating Playwright test scripts using:
 
 ## 🛠️ Project Conventions (Required)
 
-- **All mock data / test data must be defined in `tests/utils/testData`.**
-- **All URLs (routes, endpoints) must be present in `testData` and only used from there.**
-- **All helper functions (e.g., URL builders, data generators) must be placed in `tests/utils/helper-functions`.**
-- **Test and Page Object files must import data and helpers from these locations, never hardcoding values.**
-- **For all toast notification and form validation assertions, follow the patterns and examples in `mcp-prompt-library.md`.**
+- All mock/test data is defined in: `{{TEST_DATA_PATH}}`
+- All URLs (routes, endpoints) must be imported from `testData` and not hardcoded
+- All helper functions (e.g., URL builders, data generators) are in: `{{HELPERS_PATH}}`
+- Test and Page Object files must import from these locations — do not hardcode logic
+- Use assertion patterns for:
+
+  - Toasts
+  - Validation messages
+  - Dropdowns
+
+As specified in: `mcp-prompt-library.md`
+
+---
 
 ## 🔗 Website Under Test
 
-- **URL:** [https://ecommerce-omega-three-23.vercel.app/](https://ecommerce-omega-three-23.vercel.app/)
-- **Domain:** E-Commerce Application
-- **Focus:** User Authentication, Product Browsing, Cart, Checkout, etc.
+- **URL:** {{BASE\_URL}}
+- **Domain:** {{DOMAIN\_DESCRIPTION}}
+- **Focus:** {{FEATURE\_FOCUS}}
 
 ---
 
 ## 📄 Input Format
 
-You will receive a single `.md` file containing multiple structured test cases (in markdown format), including:
+You will receive a `.md` file with IEEE-style test cases including:
 
-- Test Case Title
+- Title
 - Objective
 - Preconditions
 - Steps
@@ -42,89 +50,110 @@ You will receive a single `.md` file containing multiple structured test cases (
 
 ## 🧭 Responsibilities
 
-For each test case in the markdown file:
+For each test case:
 
-- Generate a Playwright test script that includes:
-  - ✅ A pass scenario
-  - ❌ A fail scenario
-- Store the two scenarios in a single `.spec.ts` file (named after the feature or test case)
-- Create and use Page Object Model classes for relevant screens
+- Generate a Playwright `.spec.ts` test file with:
+
+  - ✅ A passing scenario
+  - ❌ A failing scenario
+
+- Store both scenarios in a single test file
+- Create and use a Page Object for each relevant screen
+- Follow MCP and POM principles
 
 ---
 
 ## 🧱 Test Script Format
 
-Each test file must contain:
+Each test must contain:
 
-- **Title:** From the test case
-- **Test Objective**
-- **Preconditions:** Navigation, login, data setup
-- **Steps:**
-  - Use POM methods
-  - Use `await`, `getByRole`, `getByText`, `locator()`
-  - Do not use hardcoded selectors
-- **Assertions:**
-  - Success verification (toast, redirect, UI state)
-  - Failure checks (error messages, UI block)
-- **Edge Cases:** If applicable
-- **Traceability Tag:** Optional
+- Title (same as test case)
+- Objective
+- Preconditions (e.g., login, navigation)
+- Steps using:
+
+  - POM methods
+  - `await`, `getByRole`, `getByText`, `locator()`
+
+- Assertions
+
+  - ✅ Success → toast messages, redirects, UI change
+  - ❌ Failure → validation errors, missing elements
+
+- Edge cases if applicable
+- Traceability tag if required
 
 ---
 
 ## 🧩 Page Object Model Requirements
 
-Each logical screen (Login, Home, ProductList, Cart, Checkout) must have a separate page class.
+Each logical screen (e.g., Login, Cart, ProductList) must have its own class:
 
-Each Page Object must:
+- Use class-level constants for all locators
+- Implement methods for user interactions (e.g., `login()`, `addToCart()`)
+- ✅ Prefer:
 
-- Use class-level constants for selectors
-- Implement methods for user actions (e.g., `login()`, `addToCart()`)
-- Use verified selectors only:
-  - ✅ Prefer: `getByRole`, `getByText`, `locator()`, `id`, `class`
-  - ❌ Avoid: `data-testid` (unless absolutely necessary)
-- Handle common UI behaviors:
-  - Dropdowns: `selectOption()` or click + `getByText()`
-  - Date pickers: click input, then select visible date
-  - Form validation: wait for error messages
-  - Toasts/alerts: wait for `role=alert` or `aria-live=polite`
+  - `getByRole`, `getByText`, `locator`, `id`, `class`
+
+- ❌ Avoid:
+
+  - `data-testid` (unless necessary)
+
+### Supported Behaviors:
+
+- Dropdowns:
+
+  - Native: use `selectOption()`
+  - Custom: click trigger + select option via text
+
+- Date pickers:
+
+  - Click input → select visible date
+
+- Toasts:
+
+  - Use `getByRole('alert')` and assert message/class
+
+- Form Validation:
+
+  - Detect errors using `.text-destructive` or `getByText()`
 
 ---
 
 ## 🧪 Output Directory Structure
 
 ```
-/tests/auth/login/
-  ├── login-success-failure.spec.ts
-
-/tests/cart/
-  ├── add-to-cart.spec.ts
-
-/tests/checkout/
-  ├── checkout-process.spec.ts
+/tests/{{MODULE}}/
+  ├── {{feature}}.spec.ts
 
 /tests/pages/
-  ├── LoginPage.ts
-  ├── ProductPage.ts
-  ├── CartPage.ts
-  ├── CheckoutPage.ts
+  ├── {{FeaturePage}}.ts
+
+/tests/utils/
+  ├── testData.ts
+  ├── helper-functions.ts
+
+/tests/fixtures/
+  ├── customFixtures.ts
 ```
 
 ---
 
 ## ⚠️ Selector & Wait Rules
 
-- ✅ Use only selectors from actual HTML on the website
-- ✅ Verify each selector using MCP Playwright
-- ✅ Insert waits for dynamic elements (`toBeVisible`, `waitForSelector`)
-- ❌ Do not use `data-testid` unless the HTML provides no alternatives
-- ❌ Do not hallucinate elements — only assert what's truly in the DOM
+- ✅ Use selectors visible in the DOM (verified with MCP tools)
+- ✅ Wait for visibility: `toBeVisible`, `waitForSelector`
+- ❌ Do not use `data-testid` unless no better alternative exists
+- ❌ Do not hallucinate or infer UI behavior — use only what is verifiable
 
 ---
 
-## 📥 Once the .md file is provided:
+## 📥 Once the `.md` file is provided:
 
-For each test case, generate:
+For each test case:
 
-- ✅ A `.spec.ts` test file with both pass/fail scenarios
-- ✅ Corresponding Page Object files if they don't already exist
-- ✅ Fully working test logic using POM + MCP
+- ✅ Generate `.spec.ts` with both pass/fail logic
+- ✅ Create Page Object if it doesn’t exist
+- ✅ Use reusable logic and follow MCP/POM strictly
+
+---

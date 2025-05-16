@@ -37,3 +37,4 @@ class HomePage {
     expect(uiCategories).toEqual(expect.arrayContaining(backendCategories));
   }
 }
+```

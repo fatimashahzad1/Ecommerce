@@ -72,3 +72,28 @@ await page.getByLabel('Category Icon').selectOption("Woman's Fashion");
 ```
 
 ---
+
+### 📅 Date Picker (Common)
+
+```ts
+await this.dateInput.click();
+await this.page.locator('.calendar-day').getByText('15').click();
+```
+
+---
+
+### 📤 File Upload
+
+```ts
+const fileInput = page.locator('input[type="file"]');
+await fileInput.setInputFiles('path/to/file.png');
+```
+
+---
+
+### 🔁 Pagination
+
+```ts
+await page.getByRole('button', { name: 'Next' }).click();
+await expect(page.locator('.page-number')).toHaveText('2');
+```
