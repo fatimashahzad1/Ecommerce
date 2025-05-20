@@ -1,0 +1,54 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+## Objective:
+For the target website, detect and mock all backend API routes (XHR/fetch/WebSocket) that perform any of the CRUD (Create, Read, Update, Delete) operations. Use **MCP Playwright** and **actual browser execution (headed mode)** to dynamically capture and mock API calls.
+
+## Requirements:
+
+1. **Use Actual Browser for Detection**:
+    - Use a real browser session (headed mode) to visit the target website.
+    - Allow the page to load fully so that all network requests are captured in real time.
+
+2. **API Route Interception (CRUD)**:
+    - Intercept all backend API calls during initial page interaction.
+    - Identify which routes perform Create, Read, Update, or Delete operations.
+
+3. **Mocking Behavior**:
+    - For every detected CRUD route:
+        - Generate mock data for success responses using static JS objects or libraries like Faker.
+        - Also create mock failure scenarios with proper HTTP status codes (e.g., 400, 404, 500).
+    - Always respond with the mock data — **never allow any real API call to go through**.
+
+4. **API Mock Implementation**:
+    - Use `page.route()` from Playwright to intercept each request.
+    - Conditionally return either:
+        - A success mock response, or
+        - A failure mock response.
+    - Support switching between mock modes via a config flag or function (e.g., `mockMode = 'success' | 'error'`).
+
+5. **General & Reusable Setup**:
+    - Structure the mocking logic into a reusable utility (e.g., `apiMocker.ts` or `mockUtils.ts`).
+    - It should be portable and configurable across any web project.
+
+6. **Logging & Debugging**:
+    - Log intercepted route paths and mock status (success/failure) to the console.
+    - Optionally write a summary JSON file of all detected API routes and how they were mocked.
+
+## Technical Setup:
+- Use **MCP Playwright in Cursor** to write and structure the test automation.
+- Run Playwright tests using the **actual browser (non-headless mode)** to ensure full network capture.
+- Use TypeScript or JavaScript.
+- Follow Playwright best practices with clean POM-based structure if needed.
+
+## Output:
+- Playwright test file(s) with full mocked setup.
+- Reusable mocking utility file.
+- (Optional) Route summary JSON or console log.
+
+## Constraints:
+- No real API request should reach the backend — full mocking only.
+- Mocks must support both success and failure testing.
+- Logic must be generic and reusable for any project or website.
