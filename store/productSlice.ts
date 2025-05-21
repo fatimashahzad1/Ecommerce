@@ -43,8 +43,18 @@ export const addProduct = createAsyncThunk<Product, Omit<Product, 'id'>>(
   'products/addProduct',
   async (product, { rejectWithValue }) => {
     try {
-      const docRef = await addDoc(collection(db, 'products'), product);
-      return { ...product, id: docRef.id };
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(product),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to add product');
+      }
+      const data = await response.json();
+      return { ...product, id: data.id };
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -56,8 +66,14 @@ export const updateProduct = createAsyncThunk<Product, Product>(
   async (product, { rejectWithValue }) => {
     try {
       const { id, ...rest } = product;
-      await updateDoc(doc(db, 'products', String(id)), rest);
-      return product;
+      const response = await fetch(`/api/products/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(rest),
+      });
+      if (!response.ok) throw new Error('Failed to update product');
+      const data = await response.json();
+      return { ...data };
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -68,7 +84,10 @@ export const deleteProduct = createAsyncThunk<string, string | number>(
   'products/deleteProduct',
   async (id, { rejectWithValue }) => {
     try {
-      await deleteDoc(doc(db, 'products', String(id)));
+      const response = await fetch(`/api/products/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete product');
       return String(id);
     } catch (error: any) {
       return rejectWithValue(error.message);

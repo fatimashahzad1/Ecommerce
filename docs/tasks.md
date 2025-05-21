@@ -77,6 +77,7 @@ Dependencies: AUTH-001
 3. Admin can manage product categories (including subcategories)
 4. Admin can view sales reports
 5. Dashboard UI is responsive and user-friendly
+6. Removed reviewCount field from admin product add/edit form. Field is no longer present in the UI or form data.
 
 ### Technical Notes
 

@@ -32,3 +32,4 @@ export * from './PillIcon';
 export * from './BabyIcon';
 export * from './AppleIcon';
 export * from './PawIcon';
+export * from './CloseIcon';

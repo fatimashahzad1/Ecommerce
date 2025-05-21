@@ -69,6 +69,7 @@
   - Pagination state and logic handled in page component
   - Follows architectural and technical guidelines
   - No blockers encountered
+- Removed reviewCount field from admin add/edit product page and form. Now, reviewCount is not present in the UI or form data. If needed, it should default to 0 in the backend or Firestore rules.
 
 ## In Progress
 
@@ -82,14 +83,14 @@
 ### ADMIN-001: Admin Dashboard
 
 - ✅ Basic dashboard layout
-- 🏗️ Product CRUD operations (Redux slice + Firebase CRUD implemented)
+- ✅ Product CRUD operations (Redux slice + API routes + Firebase integration, all CRUD via API, Redux thunks refactored to use API, not Firebase directly)
 - 🏗️ Category management (Redux slice + Firebase CRUD implemented, type updated for subcategories)
 - ⏳ Sales tracking
 
 ### DATA-001: Firebase Integration
 
 - ✅ Firestore setup
-- 🏗️ Product data migration
+- ✅ Product data migration (API and Redux now use Firestore via API routes, not mock data or direct Firebase calls)
 - ⏳ Real-time updates
 - ⏳ Error handling implementation
 - **FlashSales now fetches products from Firebase using ProductsContext, replacing mock data. Loading and error states implemented. No blockers encountered.**
