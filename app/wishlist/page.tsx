@@ -3,37 +3,26 @@ import { ProductCard } from '@/components/home/ProductCard';
 import MainLayout from '@/components/layouts/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { PRODUCTS } from '@/mocks/products';
 import { RootState } from '@/store/store';
-import { useDispatch } from 'react-redux';
 import { clearWishlist } from '@/store/wishlistSlice';
 import { addToCart } from '@/store/cartSlice';
-import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { fetchProducts } from "@/store/productSlice";
 
 const WishList = () => {
-  // const { user, loading } = useAuth();
-  // const router = useRouter();
   const wishlistItems = useSelector((state: RootState) => state.wishlist.items);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const { products, loading } = useAppSelector((state) => state.products);
 
-  // useEffect(() => {
-  //   if (!loading && !user) {
-  //     router.push('/login'); // Redirect to login if not authenticated
-  //   }
-  // }, [user, loading, router]);
-
-  // if (loading) {
-  //   return <p>Loading...</p>; // Show a loading state while checking auth
-  // }
-
-  // if (!user) {
-  //   return null; // Prevent rendering if user is not authenticated
-  // }
+  useEffect(() => {
+    if (!products.length && loading) {
+      dispatch(fetchProducts());
+      console.log('fetching products');
+    }
+  }, [dispatch, products.length, loading]);
 
   const handleMoveAllToBag = () => {
     wishlistItems.forEach((item) => {
@@ -98,7 +87,7 @@ const WishList = () => {
             </Button>
           }
         >
-          {PRODUCTS.map((product, index) => {
+          {products.map((product, index) => {
             if (!product.discount) return null; // Skip if not best selling
             return (
               <ProductCard

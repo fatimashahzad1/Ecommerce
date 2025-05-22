@@ -21,6 +21,7 @@ interface ProductCardProps {
   showAddToCart?: boolean;
   index?: number;
   testid?: string;
+  categoryId: string
 }
 
 /**
@@ -36,9 +37,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   rating,
   reviewCount,
   discount,
+  categoryId,
   showAddToCart = false,
   index,
-  testid
+  testid,
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -59,6 +61,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           reviewCount,
           discount,
           image,
+          categoryId
         })
       );
     }

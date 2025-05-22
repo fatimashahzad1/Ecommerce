@@ -7,11 +7,13 @@ import { Slider } from '@/components/ui/slider';
 import { ProductCard } from '@/components/home/ProductCard';
 import { PRODUCTS } from '@/mocks/products';
 import MainLayout from '@/components/layouts/MainLayout';
+import { useAppSelector } from "@/hooks/useRedux";
 
 export default function ProductDetailsPage() {
   const searchParams = useSearchParams();
+  const { products } = useAppSelector((state) => state.products);
   const productId = searchParams?.get('id'); // Get the product ID from the query params
-  const product = PRODUCTS.find((p) => p.id === productId); // Find the product by ID
+  const product = products.find((p) => p.id === productId); // Find the product by ID
 
   if (!product) {
     return <div className='text-center mt-20'>Product not found</div>;
@@ -35,7 +37,7 @@ export default function ProductDetailsPage() {
           aria-label='Related products'
           title='Related Items'
         >
-          {PRODUCTS.filter((p) => p.id !== productId && p.featured).map(
+          {products.filter((p) => p.id !== productId && p.featured).map(
             (relatedProduct) => (
               <ProductCard
                 key={`related-${relatedProduct.id}`}
