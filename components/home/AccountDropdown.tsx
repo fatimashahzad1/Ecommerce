@@ -1,23 +1,24 @@
 'use client';
 import * as React from 'react';
-import Image from 'next/image';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ProfileIcon } from '@/components/icons';
+import { ProfileIcon, OrderIcon, CancelIcon, StarIcon, LogoutIcon, AdminPanelIcon } from '@/components/icons';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
+import { ROUTE_LINKS } from "@/constants/routes";
 
 interface AccountDropdownProps {
   triggerRef?: React.RefObject<HTMLButtonElement>;
 }
 
 const AccountDropdown: React.FC<AccountDropdownProps> = ({ triggerRef }) => {
-  const { signOut } = useAuth();
+  const { signOut, isAdmin } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -32,7 +33,6 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({ triggerRef }) => {
       router.push('/login');
       return;
     }
-    console.log(`Clicked: ${action}`);
   };
 
   return (
@@ -47,17 +47,23 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({ triggerRef }) => {
         className='w-56 text-sm text-neutral-50 bg-black  border-0 shadow-none'
         align='end'
       >
+        {/* Admin Panel Option - only visible if user is admin */}
+        {isAdmin && (
+          <DropdownMenuItem
+            className='flex items-center gap-4 px-5 py-2.5 hover:bg-white/10 focus:bg-white/10 cursor-pointer'
+            asChild
+          >
+            <Link href={ROUTE_LINKS.adminDashboard}>
+              <AdminPanelIcon width={24} height={24} className='object-contain' color='white' />
+              <span>Admin Panel</span>
+            </Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem
           className='flex items-center gap-4 px-5 py-2.5 hover:bg-white/10 focus:bg-white/10 cursor-pointer'
           onClick={() => handleMenuItemClick('manage-account')}
         >
-          <Image
-            src='/path-to-image.jpg'
-            alt='Account Icon'
-            width={40}
-            height={40}
-            className='object-contain'
-          />
+          <ProfileIcon width={24} height={24} className='object-contain' color='white' />
           <span>Manage My Account</span>
         </DropdownMenuItem>
 
@@ -65,13 +71,7 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({ triggerRef }) => {
           className='flex items-center gap-4 px-5 py-2.5 hover:bg-white/10 focus:bg-white/10 cursor-pointer'
           onClick={() => handleMenuItemClick('my-order')}
         >
-          <Image
-            src='https://cdn.builder.io/api/v1/image/assets/50863f29051940439648c044a13e82c2/8197a8b9d2bbb9696cfef9c529618caf709403ed?placeholderIfAbsent=true'
-            alt='My Order Icon'
-            width={24}
-            height={24}
-            className='object-contain'
-          />
+          <OrderIcon width={24} height={24} className='object-contain' />
           <span>My Order</span>
         </DropdownMenuItem>
 
@@ -79,13 +79,7 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({ triggerRef }) => {
           className='flex items-center gap-4 px-5 py-2.5 hover:bg-white/10 focus:bg-white/10 cursor-pointer'
           onClick={() => handleMenuItemClick('my-cancellations')}
         >
-          <Image
-            src='https://cdn.builder.io/api/v1/image/assets/50863f29051940439648c044a13e82c2/8197a8b9d2bbb9696cfef9c529618caf709403ed?placeholderIfAbsent=true'
-            alt='My Cancellations Icon'
-            width={24}
-            height={24}
-            className='object-contain'
-          />
+          <CancelIcon width={24} height={24} className='object-contain' />
           <span>My Cancellations</span>
         </DropdownMenuItem>
 
@@ -93,13 +87,7 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({ triggerRef }) => {
           className='flex items-center gap-4 px-5 py-2.5 hover:bg-white/10 focus:bg-white/10 cursor-pointer'
           onClick={() => handleMenuItemClick('my-reviews')}
         >
-          <Image
-            src='https://cdn.builder.io/api/v1/image/assets/50863f29051940439648c044a13e82c2/838529a03e72a27d261cfcfdbffd1e1fd3ab77bd?placeholderIfAbsent=true'
-            alt='My Reviews Icon'
-            width={24}
-            height={24}
-            className='object-contain'
-          />
+          <StarIcon width={24} height={24} className='object-contain' />
           <span>My Reviews</span>
         </DropdownMenuItem>
 
@@ -107,13 +95,7 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({ triggerRef }) => {
           className='flex items-center gap-4 px-5 py-2.5 hover:bg-white/10 focus:bg-white/10 cursor-pointer'
           onClick={() => handleMenuItemClick('logout')}
         >
-          <Image
-            src='https://cdn.builder.io/api/v1/image/assets/50863f29051940439648c044a13e82c2/0924dad51fab011e5a2108c09e69b7a0b9343924?placeholderIfAbsent=true'
-            alt='Logout Icon'
-            width={24}
-            height={24}
-            className='object-contain'
-          />
+          <LogoutIcon width={24} height={24} className='object-contain' />
           <span>Logout</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

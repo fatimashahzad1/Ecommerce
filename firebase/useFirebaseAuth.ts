@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { auth } from './firebaseConfig';
+import { auth, db } from './firebaseConfig';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -10,10 +10,13 @@ import {
   sendPasswordResetEmail,
   confirmPasswordReset,
 } from 'firebase/auth';
-import { setCookie, destroyCookie } from 'nookies';
+import { setCookie, destroyCookie, parseCookies } from 'nookies';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { AppUser } from '@/types';
 
 export function useFirebaseAuth() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const signUp = async (
@@ -34,6 +37,13 @@ export function useFirebaseAuth() {
       path: '/',
       maxAge: 60 * 60 * 24,
     });
+    // Add user to Firestore with isAdmin: false by default
+    const userRef = doc(db, 'users', userCredential.user.uid);
+    await getDoc(userRef).then(async (docSnap) => {
+      if (!docSnap.exists()) {
+        await setDoc(userRef, { isAdmin: false });
+      }
+    });
     return userCredential;
   };
 
@@ -43,6 +53,7 @@ export function useFirebaseAuth() {
 
   const logOut = () => {
     destroyCookie(null, 'firebaseToken');
+    destroyCookie(null, 'userData');
     return signOut(auth);
   };
 
@@ -57,16 +68,52 @@ export function useFirebaseAuth() {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
+    setLoading(true);
 
-    return () => unsubscribe();
+    // 1. Try to get userData from cookies
+    const cookies = parseCookies();
+    const userData = cookies.userData ? JSON.parse(cookies.userData) : null;
+
+    if (userData?.uid && typeof userData?.isAdmin !== 'undefined') {
+      // Use cookie data immediately
+      setUser(userData as AppUser);
+      setIsAdmin(userData.isAdmin);
+      setLoading(false);
+    } else {
+      // No cookie, fall back to Firebase listener
+      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        if (firebaseUser) {
+          // Fetch isAdmin from Firestore
+          const userRef = doc(db, 'users', firebaseUser.uid);
+          const userSnap = await getDoc(userRef);
+          const isAdmin = userSnap.exists() ? !!userSnap.data().isAdmin : false;
+          const appUser = { ...(firebaseUser as AppUser), isAdmin };
+          setUser(appUser);
+          setIsAdmin(isAdmin);
+          // Set userData cookie for middleware
+          setCookie(null, 'userData', JSON.stringify({ ...firebaseUser }), {
+            path: '/',
+            maxAge: 60 * 60 * 24,
+          });
+          const token = await firebaseUser.getIdToken();
+          setCookie(null, 'firebaseToken', token, {
+            path: '/',
+            maxAge: 60 * 60 * 24,
+          });
+        } else {
+          setUser(null);
+          setIsAdmin(false);
+          destroyCookie(null, 'userData');
+        }
+        setLoading(false);
+      });
+      return () => unsubscribe();
+    }
   }, []);
 
   return {
     user,
+    isAdmin,
     loading,
     signUp,
     signIn,

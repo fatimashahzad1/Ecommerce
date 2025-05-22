@@ -11,13 +11,17 @@ import Link from 'next/link';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { useAuth } from '@/contexts/AuthContext';
+import { MainHeaderSkeleton } from "../skeleton/MainHeaderSkeleton";
 
 export const MainHeader: React.FC = () => {
   const accountBtnRef = React.useRef<HTMLButtonElement>(null);
   const cartItemCount = useSelector(
     (state: RootState) => state.cart.items.length
   );
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  if (loading) return <MainHeaderSkeleton />;
+
 
   return (
     <header className='max-w-[1170px] mx-auto max-md:px-5 flex flex-col md:flex-row justify-between items-center  pt-6 md:pt-10 pb-4 w-full gap-4 md:gap-8'>
@@ -32,11 +36,16 @@ export const MainHeader: React.FC = () => {
           <SheetContent side='left' className='w-[300px] sm:w-[400px]'>
             {/* Categories in Mobile Menu */}
             <nav className='flex flex-col gap-4 mt-8'>
-              {MAIN_HEADER_ROUTES.map((item) => (
-                <NavLink key={item.href} href={item.href} className='text-lg' dataTestID={item['data-testid']}>
-                  {item.label}
-                </NavLink>
-              ))}
+              {MAIN_HEADER_ROUTES.map((item) => {
+                if (user && item.href === ROUTE_LINKS.signup) {
+                  return null
+                }
+                return (
+                  <NavLink key={item.href} href={item.href} className='text-lg' dataTestID={item['data-testid']}>
+                    {item.label}
+                  </NavLink>
+                )
+              })}
               <div className='text-lg font-semibold'>Categories</div>
               {NAV_CATEGORIES.map((category) => (
                 <NavLink
@@ -58,11 +67,16 @@ export const MainHeader: React.FC = () => {
 
       {/* Middle Section - Navigation */}
       <nav className='hidden md:flex gap-8 lg:gap-12 items-center justify-center flex-1'>
-        {MAIN_HEADER_ROUTES.map((item) => (
-          <NavLink key={item.href} href={item.href} dataTestID={item['data-testid']}>
-            {item.label}
-          </NavLink>
-        ))}
+        {MAIN_HEADER_ROUTES.map((item) => {
+          if (user && item.href === ROUTE_LINKS.signup) {
+            return null
+          }
+          return (
+            <NavLink key={item.href} href={item.href} dataTestID={item['data-testid']}>
+              {item.label}
+            </NavLink>
+          )
+        })}
       </nav>
 
       {/* Right Section - Search and Icons */}

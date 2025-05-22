@@ -32,3 +32,8 @@ export * from './PillIcon';
 export * from './BabyIcon';
 export * from './AppleIcon';
 export * from './PawIcon';
+export * from './CloseIcon';
+export * from './CancelIcon';
+export * from './LogoutIcon';
+export * from './OrderIcon';
+export * from './AdminPanelIcon';

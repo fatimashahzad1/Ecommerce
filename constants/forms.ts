@@ -155,3 +155,53 @@ export const BILLING_FORM_FIELDS: FormField[] = [
     required: false,
   },
 ];
+
+export const ADMIN_PRODUCT_FORM_FIELDS = [
+  {
+    name: 'image',
+    labelKey: 'admin.productImage',
+    defaultLabel: 'Image',
+    type: 'text',
+    isCustom: true, // Will be handled separately
+  },
+  {
+    name: 'title',
+    labelKey: 'admin.productTitle',
+    defaultLabel: 'Product Title',
+    type: 'text',
+  },
+
+  {
+    name: 'price',
+    labelKey: 'admin.productPrice',
+    defaultLabel: 'Price',
+    type: 'number',
+  },
+  {
+    name: 'originalPrice',
+    labelKey: 'admin.productOriginalPrice',
+    defaultLabel: 'Original Price',
+    type: 'number',
+  },
+  {
+    name: 'discount',
+    labelKey: 'admin.productDiscount',
+    defaultLabel: 'Discount',
+    type: 'number',
+  },
+  {
+    name: 'rating',
+    labelKey: 'admin.productRating',
+    defaultLabel: 'Rating',
+    type: 'number',
+    step: '0.1',
+    min: 0,
+    max: 5,
+  },
+  {
+    name: 'description',
+    labelKey: 'admin.productDescription',
+    defaultLabel: 'Description',
+    type: 'textarea',
+  },
+];

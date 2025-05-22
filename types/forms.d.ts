@@ -27,11 +27,20 @@ export type ForgotPasswordFormData = {
 
 export type FormField = {
   name: string;
-  type: 'text' | 'password' | 'tel' | 'email' | 'checkbox';
+  type: FormFieldTypes;
   placeholder?: string;
   label?: string;
   required?: boolean;
 };
+
+export type FormFieldTypes =
+  | 'text'
+  | 'password'
+  | 'tel'
+  | 'email'
+  | 'checkbox'
+  | 'number'
+  | 'textarea';
 
 export type ContactFormData = {
   name: string;

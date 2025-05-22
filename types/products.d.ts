@@ -13,4 +13,7 @@ export interface Product {
   colors?: string[]; // Optional for products without color options
   sizes?: { size: string; count: number }[]; // Optional for products without size options
   stockStatus?: 'In Stock' | 'Out of Stock' | 'Limited Stock'; // Optional for products that are always in stock
+  gallery?: string[]; // Optional gallery images (up to 5)
+  categoryId: string;
+  subcategoryId?: string;
 }

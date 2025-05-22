@@ -112,3 +112,25 @@ export const getBillingFormSchema = (t: (key: string) => string) =>
     email: z.string().email(t('billing.form.validation.email')),
     saveInfo: z.boolean(),
   });
+
+export const getProductFormSchema = (t: (key: string) => string) =>
+  z.object({
+    title: z.string().min(2, t('product.form.validation.title')),
+    image: z.string().url(t('product.form.validation.image')),
+    price: z.coerce.number().min(0, t('product.form.validation.price')),
+    originalPrice: z.coerce.number().optional(),
+    discount: z.coerce.number().optional(),
+    reviewCount: z.coerce.number().optional(),
+    bestSelling: z.boolean().optional(),
+    featured: z.boolean().optional(),
+    rating: z.coerce.number().min(0).max(5).optional(),
+    description: z.string().optional(),
+    colors: z.string().optional(), // comma separated
+    sizes: z.string().optional(), // comma separated (size:count)
+    stockStatus: z
+      .enum(['In Stock', 'Out of Stock', 'Limited Stock'])
+      .optional(),
+    categoryId: z.string().nonempty(t('product.form.validation.categoryId')),
+    subcategoryId: z.string().optional(),
+    gallery: z.array(z.string().url()).max(5).optional(),
+  });
