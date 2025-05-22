@@ -1,14 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { Product } from '../types/products';
-import { db } from '../firebase/firebaseConfig';
-import {
-  collection,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-} from 'firebase/firestore';
-
 interface ProductState {
   products: Product[];
   loading: boolean;

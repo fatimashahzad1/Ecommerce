@@ -2,7 +2,7 @@ import path from 'path';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['cdn.builder.io'],
+    domains: ['cdn.builder.io', 'res.cloudinary.com'],
   },
   webpack: (config) => {
     config.resolve.alias['@emotion/core'] = path.resolve(

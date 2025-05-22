@@ -6,3 +6,4 @@ export interface IconProps {
 }
 
 export * from './categories';
+export * from './user';

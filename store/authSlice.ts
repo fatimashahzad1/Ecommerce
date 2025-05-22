@@ -1,14 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { User } from 'firebase/auth';
+import { AppUser } from '@/types';
 
 interface AuthState {
-  user: User | null;
+  user: AppUser | null;
+  isAdmin: boolean;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: AuthState = {
   user: null,
+  isAdmin: false,
   loading: false,
   error: null,
 };
@@ -17,8 +19,9 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setUser(state, action: PayloadAction<User | null>) {
+    setUser(state, action: PayloadAction<AppUser | null>) {
       state.user = action.payload;
+      state.isAdmin = action.payload?.isAdmin ?? false;
     },
     setLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;

@@ -70,6 +70,9 @@
   - Follows architectural and technical guidelines
   - No blockers encountered
 - Removed reviewCount field from admin add/edit product page and form. Now, reviewCount is not present in the UI or form data. If needed, it should default to 0 in the backend or Firestore rules.
+- Replaced all images in AccountDropdown with reusable icon components (ProfileIcon, ShoppingBagIcon, CancelIcon, StarIcon, LogoutIcon) from components/icons/.
+- Created new CancelIcon and LogoutIcon for AccountDropdown menu.
+- All changes follow architecture, technical, and UI guidelines. No blockers encountered.
 
 ## In Progress
 
@@ -84,7 +87,7 @@
 
 - ✅ Basic dashboard layout
 - ✅ Product CRUD operations (Redux slice + API routes + Firebase integration, all CRUD via API, Redux thunks refactored to use API, not Firebase directly)
-- 🏗️ Category management (Redux slice + Firebase CRUD implemented, type updated for subcategories)
+- ✅ Category management (Redux slice + Firebase CRUD implemented, type updated for subcategories, admin UI refactored for consistency with products page)
 - ⏳ Sales tracking
 
 ### DATA-001: Firebase Integration
@@ -142,3 +145,11 @@
 - Follow TypeScript best practices
 - Implement proper error handling
 - Add loading states for all async operations
+
+---
+
+**Update [DATE]:**
+
+- MainHeader now displays a skeleton matching the header layout when authentication is loading (uses loading from useAuth).
+- Skeleton uses the shared Skeleton component and matches the actual header structure for seamless UX.
+- Implementation follows technical, architectural, and UI guidelines. No blockers encountered.
