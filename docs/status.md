@@ -62,6 +62,17 @@
   - Test cases cover all CRUD and validation scenarios for categories as per ADMIN-001 requirements
   - Aligned with technical, architectural, and testing guidelines
   - No blockers encountered
+- **Admin Product Management Test Cases (Markdown):**
+  - Added detailed admin product management test cases in `tests/test-cases/admin/products.md` (login, admin access, product add/edit/delete, pagination, homepage visibility)
+  - Test cases cover all CRUD, admin access, and pagination scenarios for products as per ADMIN-001 requirements
+  - Aligned with technical, architectural, and testing guidelines
+  - Ready for Playwright MCP+POM test generation
+  - No blockers encountered
+- **Admin Product Management Playwright MCP+POM E2E Tests Implemented:**
+  - All scenarios from `tests/test-cases/admin/products.md` (CRUD, pagination) are now covered in `tests/admin/products.spec.ts` using the MCP and POM structure
+  - Page Object created at `tests/pages/AdminProductsPage.ts` with strict typing and verified selectors (live site)
+  - All tests follow MCP, technical, and architectural guidelines
+  - No blockers encountered; ready for review and integration
 
 ## In Progress
 
@@ -93,6 +104,12 @@
 - 🏗️ Local storage implementation
 - ⏳ Firebase sync
 - ⏳ Conflict resolution
+
+### MCP Playwright CRUD Mocking Rule Update
+
+- ✅ Added rule to `.cursor/rules/change-api-responses-crud.mdc` requiring all CRUD API mocks to use a shared variable (closure/module scope) for consistent state across Create, Read, Update, Delete operations in Playwright tests.
+- Ensures test data consistency and realistic E2E flows for admin/product/category CRUD scenarios.
+- No blockers encountered. Aligned with technical, architectural, and testing guidelines.
 
 ## Pending
 

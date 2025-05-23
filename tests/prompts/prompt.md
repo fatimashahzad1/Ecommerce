@@ -29,9 +29,9 @@ As specified in: `mcp-prompt-library.md`
 
 ## 🔗 Website Under Test
 
-- **URL:** {{BASE\_URL}}
-- **Domain:** {{DOMAIN\_DESCRIPTION}}
-- **Focus:** {{FEATURE\_FOCUS}}
+- **URL:** https://ecommerce-omega-three-23.vercel.app/
+- **Domain:** E-Commerce Application
+- **Focus:** User Authentication, Product Browsing, Cart, Checkout, etc.
 
 ---
 

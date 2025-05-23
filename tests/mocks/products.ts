@@ -56,7 +56,7 @@ export const mockProducts = [
     id: '7',
     reviewCount: 99,
     discount: 25,
-    title: 'S-Series Comfort Chair',
+    title: 'S-Series Comfort Chair 2',
     price: 375,
     image:
       'https://cdn.builder.io/api/v1/image/assets/50863f29051940439648c044a13e82c2/d9422fa273d9c73fa03429a1516009cf254f5c07',
@@ -64,65 +64,16 @@ export const mockProducts = [
     rating: 4.5,
   },
   {
-    id: '15',
-    rating: 4,
-    price: 500,
-    title: 'Curology Product Set',
-    image:
-      'https://cdn.builder.io/api/v1/image/assets/50863f29051940439648c044a13e82c2/20d353ac44b58ec5f72c8d04bb30c4c1d00e24a2',
-    reviewCount: 145,
-  },
-  {
-    id: '9',
-    colors: ['black'],
-    title: 'RGB Liquid CPU Cooler',
-    image:
-      'https://cdn.builder.io/api/v1/image/assets/50863f29051940439648c044a13e82c2/cd8d81ae34c65d85c51a91e2c58adcef16f6fa28?placeholderIfAbsent=true',
-    featured: true,
-    description:
-      'High-performance liquid CPU cooler with RGB lighting. Keeps your system cool and stylish.',
-    sizes: [],
-    originalPrice: 170,
-    price: 160,
-    stockStatus: 'In Stock',
-    reviewCount: 65,
-    rating: 5,
-  },
-  {
-    id: '12',
-    reviewCount: 35,
-    price: 100,
-    rating: 4,
-    image:
-      'https://cdn.builder.io/api/v1/image/assets/50863f29051940439648c044a13e82c2/d026a43de889a045e41d702be35b797005481ad0',
-    title: 'Breed Dry Dog Food',
-  },
-  {
     id: '1',
     price: 120,
     stockStatus: 'In Stock',
     discount: 40,
     sizes: [
-      {
-        size: 'XS',
-        count: 10,
-      },
-      {
-        count: 15,
-        size: 'S',
-      },
-      {
-        size: 'M',
-        count: 20,
-      },
-      {
-        size: 'L',
-        count: 5,
-      },
-      {
-        count: 2,
-        size: 'XL',
-      },
+      { size: 'XS', count: 10 },
+      { size: 'S', count: 15 },
+      { size: 'M', count: 20 },
+      { size: 'L', count: 5 },
+      { size: 'XL', count: 2 },
     ],
     featured: true,
     colors: ['red', 'blue', 'black'],
@@ -147,22 +98,10 @@ export const mockProducts = [
   {
     id: '5',
     sizes: [
-      {
-        size: 'S',
-        count: 12,
-      },
-      {
-        count: 8,
-        size: 'M',
-      },
-      {
-        size: 'L',
-        count: 5,
-      },
-      {
-        count: 3,
-        size: 'XL',
-      },
+      { size: 'S', count: 12 },
+      { size: 'M', count: 8 },
+      { size: 'L', count: 5 },
+      { size: 'XL', count: 3 },
     ],
     description:
       'Stylish and warm winter coat made with high-quality materials. Perfect for cold weather.',
@@ -204,28 +143,10 @@ export const mockProducts = [
       'Ergonomic design with mechanical keys for a smooth typing experience. Durable and long-lasting.',
   },
   {
-    id: '13',
-    image:
-      'https://cdn.builder.io/api/v1/image/assets/50863f29051940439648c044a13e82c2/05e7c1dcedafbdf9d1a898a97483cfcadcc01a2b',
-    title: 'CANON EOS DSLR Camera',
-    price: 360,
-    reviewCount: 95,
-    rating: 4,
-  },
-  {
-    id: '18',
-    price: 700,
-    title: 'ASUS FHD Gaming Laptop',
-    image:
-      'https://cdn.builder.io/api/v1/image/assets/50863f29051940439648c044a13e82c2/1576308dad6976ed06f0b14aabd09fb00cb43e78',
-    reviewCount: 325,
-    rating: 5,
-  },
-  {
     id: '4',
     colors: ['gray', 'black'],
     sizes: [],
-    title: 'S-Series Comfort Chair',
+    title: 'S-Series Comfort Chair 1',
     image:
       'https://cdn.builder.io/api/v1/image/assets/50863f29051940439648c044a13e82c2/d9422fa273d9c73fa03429a1516009cf254f5c07',
     bestSelling: true,
@@ -238,22 +159,25 @@ export const mockProducts = [
     discount: 25,
     reviewCount: 99,
   },
-  {
-    id: '6',
-    stockStatus: 'Limited Stock',
-    price: 370,
-    rating: 5,
-    image:
-      'https://cdn.builder.io/api/v1/image/assets/50863f29051940439648c044a13e82c2/690018693f67fd8cc4949c739b0c81478431edfe',
-    description:
-      '27-inch IPS LCD monitor with 144Hz refresh rate and 1ms response time. Perfect for gaming and productivity.',
-    discount: 30,
-    colors: ['black'],
-    title: 'IPS LCD Gaming Monitor',
-    sizes: [],
-    originalPrice: 400,
-    reviewCount: 99,
-  },
 ];
 
-export const mockProductsEmpty: Product[] = [];
+export const mockProductsWithStock = {
+  title: 'A Test Product',
+  price: 99.99,
+  description: 'This is a test product.',
+  category: 'Electronics',
+  imagePath: 'tests/mocks/test-image.jpg', // Ensure this file exists or mock
+  bestSelling: true,
+  featured: true,
+  stockStatus: 'In Stock',
+  sizes: [
+    { size: 'Small (S)', stock: 5 },
+    { size: 'Medium (M)', stock: 10 },
+    { size: 'Large (L)', stock: 15 },
+    { size: 'Extra Large (XL)', stock: 20 },
+  ],
+};
+
+export const mockUpdatedProductsWithStock = {
+  title: 'A Updated Test Product',
+};

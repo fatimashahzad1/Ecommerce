@@ -37,6 +37,46 @@ For the target website, detect and mock all backend API routes (XHR/fetch/WebSoc
     - Log intercepted route paths and mock status (success/failure) to the console.
     - Optionally write a summary JSON file of all detected API routes and how they were mocked.
 
+## 3a. Consistent Mock State for CRUD Operations:
+- Use a single, shared variable (e.g., `let mockData = [...]`) to hold the mock data for all CRUD API mocks.
+- Initialize this variable at the start of the test or in a closure/module scope.
+- All CRUD API mocks (Create, Read, Update, Delete) must read from and mutate this variable directly.
+- This ensures that any changes made by one API (e.g., Create or Edit) are reflected in subsequent API calls (e.g., Read or Delete), maintaining data consistency throughout the test flow.
+- Use closures or module-scoped variables to encapsulate the shared state.
+- Example structure:
+  ```ts
+  // At the top of your test file or inside a describe/closure:
+  let mockData = [ /* initial items */ ];
+
+  // Mock for GET (Read)
+  page.route('**/api/items', route => {
+    route.fulfill({ json: mockData });
+  });
+
+  // Mock for POST (Create)
+  page.route('**/api/items', async route => {
+    const newItem = await route.request().postDataJSON();
+    mockData.push(newItem);
+    route.fulfill({ json: newItem });
+  });
+
+  // Mock for PUT (Edit)
+  page.route('**/api/items/:id', async route => {
+    const updatedItem = await route.request().postDataJSON();
+    mockData = mockData.map(item => item.id === updatedItem.id ? updatedItem : item);
+    route.fulfill({ json: updatedItem });
+  });
+
+  // Mock for DELETE
+  page.route('**/api/items/:id', route => {
+    const id = extractIdFromUrl(route.request().url());
+    mockData = mockData.filter(item => item.id !== id);
+    route.fulfill({ status: 200 });
+  });
+  ```
+- Always mutate the `mockData` variable for every CRUD operation.
+- This approach ensures that the data returned by the Read API always reflects the latest state after any Create, Edit, or Delete operation, supporting realistic and consistent E2E test flows.
+
 ## Technical Setup:
 - Use **MCP Playwright in Cursor** to write and structure the test automation.
 - Run Playwright tests using the **actual browser (non-headless mode)** to ensure full network capture.
