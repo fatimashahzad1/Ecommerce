@@ -33,7 +33,9 @@ export class AdminProductsPage {
   }
 
   async goto() {
-    await this.page.goto('/admin/products');
+    if (!this.page.url().includes('/admin/products')) {
+      await this.page.goto('/admin/products');
+    }
   }
 
   async clickAddProduct() {

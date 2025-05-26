@@ -11,29 +11,29 @@ function extractIdFromUrl(url: string): string | undefined {
  * @param page Playwright Page
  */
 export async function setupProductApiMocks(page: Page) {
+  let mockProductsResponse = [...mockProducts];
   // PUT (Edit product)
   await page.route('**/api/products', async (route: Route) => {
-    console.log('in **/api/products/*');
     // GET all products
     if (route.request().method() === 'GET') {
-      console.log('in GET route');
-      route.fulfill({ json: mockProducts });
+      route.fulfill({ json: mockProductsResponse });
     }
 
     // POST (Create product)
     else if (route.request().method() === 'POST') {
-      console.log('in POST route');
       const newProduct = await route.request().postDataJSON();
       newProduct.id = (Math.random() * 1e8).toFixed(0); // simple id
-      mockProducts.push(newProduct);
+      mockProductsResponse.push(newProduct);
       route.fulfill({ json: newProduct });
     } else if (route.request().method() === 'PUT') {
-      console.log('PUT request received');
       const updatedProduct = await route.request().postDataJSON();
       const id = extractIdFromUrl(route.request().url());
-      const idx = mockProducts.findIndex((p) => p.id === id);
+      const idx = mockProductsResponse.findIndex((p) => p.id === id);
       if (idx !== -1)
-        mockProducts[idx] = { ...mockProducts[idx], ...updatedProduct };
+        mockProductsResponse[idx] = {
+          ...mockProductsResponse[idx],
+          ...updatedProduct,
+        };
       route.fulfill({ json: updatedProduct });
     } else {
       route.continue();
@@ -42,25 +42,21 @@ export async function setupProductApiMocks(page: Page) {
 
   // DELETE (Delete product)
   await page.route('**/api/products/*', (route: Route) => {
-    console.log('in **/api/products/*');
     if (route.request().method() === 'DELETE') {
-      console.log('in DELETE route');
       const id = extractIdFromUrl(route.request().url());
-      const idx = mockProducts.findIndex((p) => p.id === id);
-      if (idx !== -1) mockProducts.splice(idx, 1);
+      const idx = mockProductsResponse.findIndex((p) => p.id === id);
+      if (idx !== -1) mockProductsResponse.splice(idx, 1);
       route.fulfill({ status: 200 });
     } else if (route.request().method() === 'PUT') {
-      console.log('PUT request received');
       const updatedProduct = route.request().postDataJSON();
-      console.log('updatedProduct', updatedProduct);
       const id = extractIdFromUrl(route.request().url());
-      console.log('id', id);
-      const idx = mockProducts.findIndex((p) => p.id === id);
-      console.log('idx', idx);
+      const idx = mockProductsResponse.findIndex((p) => p.id === id);
       if (idx !== -1)
-        mockProducts[idx] = { ...mockProducts[idx], ...updatedProduct };
+        mockProductsResponse[idx] = {
+          ...mockProductsResponse[idx],
+          ...updatedProduct,
+        };
 
-      console.log('mockProducts', mockProducts);
       route.fulfill({ json: updatedProduct });
     } else {
       route.continue();

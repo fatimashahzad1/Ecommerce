@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect, Page, BrowserContext } from '@playwright/test';
 import {
   AdminProductsPage,
   AdminProductFormPage,
@@ -23,33 +23,41 @@ async function loginAsAdmin(page: Page) {
   await expect(page).toHaveURL(/\//); // Should redirect to home
 }
 
+let context: BrowserContext;
+let page: Page;
+let adminProductsPage: AdminProductsPage;
+let adminProductsFormPage: AdminProductFormPage;
+
 test.describe('Admin Products CRUD & Pagination', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeAll(async ({ browser }) => {
+    context = await browser.newContext();
+    page = await context.newPage();
     await setupProductApiMocks(page);
     await setupUploadImageMock(page);
     await loginAsAdmin(page);
     // Open user menu and go to admin panel
     await page.getByRole('button', { name: 'Toggle account menu' }).click();
     await page.click('a[href="/admin"]');
+    adminProductsPage = new AdminProductsPage(page);
+    adminProductsFormPage = new AdminProductFormPage(page);
   });
 
-  test('TC-003: Create a New Product', async ({ page }) => {
-    const productsPage = new AdminProductsPage(page);
-    await productsPage.goto();
-    await productsPage.clickAddProduct();
-    const formPage = new AdminProductFormPage(page);
-    await formPage.fillProductForm(mockProductsWithStock);
-    await formPage.save();
+  test.beforeEach(async () => {
+    await adminProductsPage.goto();
+  });
+
+  test('TC-003: Create a New Product', async () => {
+    await adminProductsPage.clickAddProduct();
+    await adminProductsFormPage.fillProductForm(mockProductsWithStock);
+    await adminProductsFormPage.save();
     // Should redirect to products list and show new product
     await expect(
-      productsPage.productRows.filter({ hasText: 'A Test Product' })
+      adminProductsPage.productRows.filter({ hasText: 'A Test Product' })
     ).toHaveCount(1);
   });
 
-  test('TC-004: Edit an Existing Product', async ({ page }) => {
-    const productsPage = new AdminProductsPage(page);
-    await productsPage.goto();
-
+  test('TC-004: Edit an Existing Product', async () => {
+    await adminProductsPage.clickEditByName(mockProductsWithStock.title);
     //add a new product
     // await productsPage.clickAddProduct();
     // const formPageCreate = new AdminProductFormPage(page);
@@ -57,22 +65,23 @@ test.describe('Admin Products CRUD & Pagination', () => {
     // await formPageCreate.save();
 
     //edit the product
-    await productsPage.clickEditByName(mockProductsWithStock.title);
-    const formPageEdit = new AdminProductFormPage(page);
-    await formPageEdit.titleInput.fill(mockUpdatedProductsWithStock.title);
-    await formPageEdit.saveChanges();
+    await adminProductsPage.clickEditByName(mockProductsWithStock.title);
+    await adminProductsFormPage.titleInput.fill(
+      mockUpdatedProductsWithStock.title
+    );
+    await adminProductsFormPage.saveChanges();
     // Should show updated name in list
-    await productsPage.page.reload();
+    await adminProductsPage.page.reload();
     await expect(
-      productsPage.productRows.filter({
+      adminProductsPage.productRows.filter({
         hasText: mockUpdatedProductsWithStock.title,
       })
     ).toHaveCount(1);
   });
 
-  test('TC-005: Delete a Product', async ({ page }) => {
-    const productsPage = new AdminProductsPage(page);
-    await productsPage.goto();
+  test('TC-005: Delete a Product', async () => {
+    //const productsPage = new AdminProductsPage(page);
+    // await productsPage.goto();
 
     //add a new product
     // await productsPage.clickAddProduct();
@@ -80,7 +89,9 @@ test.describe('Admin Products CRUD & Pagination', () => {
     // await formPageCreate.fillProductForm(mockProductsWithStock);
     // await formPageCreate.save();
 
-    await productsPage.clickDeleteByName(mockUpdatedProductsWithStock.title);
+    await adminProductsPage.clickDeleteByName(
+      mockUpdatedProductsWithStock.title
+    );
     // Confirm deletion if prompt appears (customize if modal is used)
     await page
       .locator('div')
@@ -90,11 +101,13 @@ test.describe('Admin Products CRUD & Pagination', () => {
       .click();
 
     await expect(
-      productsPage.productRows.filter({ hasText: mockProductsWithStock.title })
+      adminProductsPage.productRows.filter({
+        hasText: mockProductsWithStock.title,
+      })
     ).toHaveCount(0);
   });
 
-  test('TC-006: Verify Pagination in Product List', async ({ page }) => {
+  test('TC-006: Verify Pagination in Product List', async () => {
     const productsPage = new AdminProductsPage(page);
     await productsPage.goto();
 
