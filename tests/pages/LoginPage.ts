@@ -126,4 +126,36 @@ export class LoginPage {
   async assertValidationErrorCount(expectedCount: number) {
     await expect(this.validationError).toHaveCount(expectedCount);
   }
+
+  /**
+   * Open the language selector dropdown (header)
+   */
+  async openLanguageDropdown(language: 'English' | 'Français') {
+    await this.page.getByRole('button', { name: language }).click();
+  }
+
+  /**
+   * Select a language from the dropdown by visible text
+   */
+  async selectLanguage(language: 'English' | 'Français') {
+    await this.page.getByRole('menuitem', { name: language }).click();
+  }
+
+  /**
+   * Assert that the login page heading is in the expected language
+   */
+  async assertLoginHeading(expected: string) {
+    await expect(
+      this.page.getByRole('heading', { name: expected })
+    ).toBeVisible();
+  }
+
+  /**
+   * Assert that the language selector button shows the expected language
+   */
+  async assertLanguageSelector(expected: string) {
+    await expect(
+      this.page.getByRole('button', { name: expected })
+    ).toBeVisible();
+  }
 }

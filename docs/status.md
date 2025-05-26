@@ -22,6 +22,9 @@
   - Added detailed login test cases in `tests/test-cases/auth/login.md` (valid login, invalid password, empty fields, sign-up redirect)
   - Test cases cover UC-AUTH-001, UC-AUTH-002, UC-AUTH-003, UC-AUTH-004
   - Aligned with current authentication requirements and technical guidelines
+  - **New:** Added language switch test case (English to French) covering UC-I18N-001 (Internationalization – Language Switching)
+  - Test case ensures UI text updates and selector reflects French after switching language on login page
+  - Aligned with i18n requirements and technical guidelines
 - **Playwright MCP + POM Test Script Generator Prompt:**
   - Added documentation in `tests/test-cases/prompt.md` to standardize Playwright test authoring using MCP and POM
   - Supports maintainable, modular, and standards-compliant E2E test development

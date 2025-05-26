@@ -181,3 +181,59 @@
 
 - **Pass:** User is navigated to the registration/sign-up page
 - **Fail:** Link does nothing or shows an error
+
+---
+
+## Test Case ID: TC-005
+
+**Test Case Name:** Language Switch from English to French  
+**Test Item(s):** Language Selector Dropdown
+
+**Requirement(s) Covered:** UC-I18N-001 (Internationalization – Language Switching)
+
+### Input Specifications
+
+- **Initial Language:** English
+- **Target Language:** French
+
+### Preconditions
+
+- User is on the login page: https://ecommerce-omega-three-23.vercel.app/login
+- Internet connection is active
+- Browser supports JavaScript and modern web standards
+
+### Test Data
+
+- None required
+
+### Output Specifications
+
+- All visible UI text elements update from English to French
+- Language selector reflects the selected language (French)
+
+### Environmental Needs
+
+- **Browser:** Chrome v120.0 or later
+- **OS:** Windows 10 / macOS / Linux
+- **Internet connection**
+
+### Special Procedural Requirements
+
+- None
+
+### Intercase Dependencies
+
+- None
+
+### Test Procedure Steps
+
+1. Navigate to: https://ecommerce-omega-three-23.vercel.app/login
+2. Locate the language selector in the top header (default is "English")
+3. Click on the language selector to open the dropdown menu
+4. Select "Français" from the dropdown options
+5. Observe the page for changes in the displayed language
+
+### Pass/Fail Criteria
+
+- **Pass:** All visible UI text elements, including headings, placeholders, buttons, and labels, update to French
+- **Fail:** UI text remains in English or displays incorrect/incomplete translations after selecting French

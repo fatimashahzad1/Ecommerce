@@ -5,4 +5,6 @@ export interface IconProps {
   className?: string;
 }
 
+export type Language = 'English' | 'Français';
+
 export * from './categories';
