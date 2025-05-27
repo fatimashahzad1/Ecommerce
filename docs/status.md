@@ -25,10 +25,16 @@
   - **New:** Added language switch test case (English to French) covering UC-I18N-001 (Internationalization – Language Switching)
   - Test case ensures UI text updates and selector reflects French after switching language on login page
   - Aligned with i18n requirements and technical guidelines
+- **Login Test Strategies Documentation (Markdown, IEEE-style):**
+  - Added comprehensive login test strategy documentation in `tests/auth/login/login-using-test-strategies.md`
+  - Covers advanced scenarios: rapid submission prevention, accessibility of "Forgot Password?" link, field validation, and success/failure flows
+  - All cases are in markdown, IEEE-style, and align with technical, architectural, and testing guidelines
+  - No blockers encountered
 - **Playwright MCP + POM Test Script Generator Prompt:**
   - Added documentation in `tests/test-cases/prompt.md` to standardize Playwright test authoring using MCP and POM
   - Supports maintainable, modular, and standards-compliant E2E test development
   - **Updated:** Explicit rule added to require use of MCP Playwright to inspect HTML and obtain actual selectors for all required elements. No guessing or hallucinating selectors. All conventions and technical requirements remain satisfied.
+  - **New:** Prompt now requires the user to specify the page type (from `mcp-test-strategies.md`) for each test-case. The generator must use the corresponding strategy for that page type when generating test scripts. This ensures all generated tests follow the correct mocking, validation, and assertion patterns for the page type. No blockers encountered; aligns with architectural and technical guidelines.
 - **Playwright MCP + POM Login E2E Tests Implemented:**
   - All scenarios from `tests/test-cases/auth/login.md` are now covered in `tests/auth/login/login-success-failure.spec.ts` using the MCP and POM structure
   - Page Object created at `tests/pages/LoginPage.ts` with strict typing and verified selectors

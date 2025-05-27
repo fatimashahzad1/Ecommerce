@@ -15,7 +15,7 @@ To detect and assert toast messages:
 ✅ Example: Success Toast
 
 ```ts
-const toast = page.getByRole('alert');
+const toast = page.locator('li[role="alert"]');
 await expect(toast).toHaveClass(/bg-green-500 text-white/);
 await expect(toast).toHaveText(/Successfully added/);
 ```

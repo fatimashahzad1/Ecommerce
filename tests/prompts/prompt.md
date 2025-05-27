@@ -153,7 +153,38 @@ Each logical screen (e.g., Login, Cart, ProductList) must have its own class:
 For each test case:
 
 - ✅ Generate `.spec.ts` with both pass/fail logic
-- ✅ Create Page Object if it doesn’t exist
+- ✅ Create Page Object if it doesn't exist
 - ✅ Use reusable logic and follow MCP/POM strictly
+
+---
+
+## 🧑‍💻 **Page Type Selection Requirement**
+
+Before generating test scripts for any test case, **ask the user to specify the type of page** the test case is for. The available page types are defined in `mcp-test-strategies.md` and include:
+
+- Listing (Index) Page
+- Detail Page
+- Form Page (Create / Update)
+- Dashboard Page
+- Static Page
+- Authentication Pages
+- Error Pages (404, 500, etc.)
+- Profile / Settings Page
+- Search Results Page
+- Landing Page
+- Home Page
+
+**Do not proceed with test script generation until the user has specified the page type for each test case.**
+
+## 🧑‍💻 **Page-Type-Specific Strategy Requirement**
+
+When generating test scripts, **use the testing strategy defined for the specified page type in `mcp-test-strategies.md`**. This includes:
+
+- Mocking requirements
+- Validation and assertion patterns
+- Extensible features and edge cases
+- Shared best practices
+
+**Incorporate the relevant strategy for the page type into the generated test scripts.**
 
 ---

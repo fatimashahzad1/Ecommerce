@@ -23,7 +23,7 @@ export class LoginPage {
     this.passwordInput = page.locator('input[placeholder="Password"]');
     this.loginButton = page.getByRole('button', { name: /log in/i });
     this.signUpLink = page.getByRole('link', { name: /sign up/i });
-    this.toast = page.getByRole('alert');
+    this.toast = page.locator('li[role="alert"]');
     this.validationError = page.locator('p.text-destructive');
   }
 

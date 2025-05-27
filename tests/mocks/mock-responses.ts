@@ -21,3 +21,53 @@ export const mockCloudinaryResponse = {
   access_mode: 'public',
   original_filename: 'test-imageee',
 };
+export const mockFirebaseLoginSuccess = {
+  kind: 'identitytoolkit#VerifyPasswordResponse',
+  localId: 'mockedLocalId123',
+  email: 'fatima.shahzad@bitsol.tech',
+  displayName: 'Fatima Shahzad',
+  idToken: 'mockedIdToken',
+  registered: true,
+  refreshToken: 'mockedRefreshToken',
+  expiresIn: '3600',
+};
+
+export const mockFirebaseLoginError = {
+  error: {
+    code: 400,
+    message: 'INVALID_PASSWORD',
+    errors: [
+      {
+        message: 'INVALID_PASSWORD',
+        domain: 'global',
+        reason: 'invalid',
+      },
+    ],
+  },
+};
+
+export const mockFirebaseAccountLookupSuccess = {
+  users: [
+    {
+      localId: 'mockedLocalId123',
+      email: 'fatima.shahzad@bitsol.tech',
+      displayName: 'Fatima Shahzad',
+      emailVerified: true,
+      disabled: false,
+      providerUserInfo: [
+        {
+          providerId: 'password',
+          federatedId: 'fatima.shahzad@bitsol.tech',
+          email: 'fatima.shahzad@bitsol.tech',
+        },
+      ],
+      photoUrl: '',
+      passwordHash: 'mockedHash',
+      passwordUpdatedAt: 1680000000000,
+      validSince: '1680000000',
+      lastLoginAt: '1680000000000',
+      createdAt: '1670000000000',
+      lastRefreshAt: '2024-05-20T12:00:00.000Z',
+    },
+  ],
+};
