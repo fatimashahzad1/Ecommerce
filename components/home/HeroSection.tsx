@@ -8,8 +8,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { NAV_CATEGORIES } from '@/mocks/categories';
+import { useAppSelector } from '@/hooks/useRedux';
 import { NavCategory } from '@/types/categories';
+import { Skeleton } from "../ui/skeleton";
 
 /**
  * Category Item Component
@@ -52,6 +53,37 @@ const CategoryItem: React.FC<{ category: NavCategory }> = ({ category }) => {
  * HeroSection Component
  */
 export const HeroSection = () => {
+  const { categories, loading } = useAppSelector((state) => state.categories);
+
+  // Transform categories into NavCategory[]
+  function slugify(name: string) {
+    return name
+      .toLowerCase()
+      .replace(/&/g, 'and')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  const navCategories: NavCategory[] = categories
+    .filter((cat) => !cat.parentId)
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((cat) => {
+      const parentSlug = slugify(cat.name);
+      const subCategories = categories
+        .filter((sub) => sub.parentId === cat.id)
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((sub) => ({
+          name: sub.name,
+          href: `/products/all?category=${parentSlug}&subCategory=${slugify(sub.name)}`,
+        }));
+      return {
+        name: cat.name,
+        href: `/products/all?category=${parentSlug}`,
+        hasSubmenu: subCategories.length > 0,
+        subCategories: subCategories.length > 0 ? subCategories : undefined,
+      };
+    });
+
   return (
     <section className='w-full' aria-label='Hero banner'>
       <div className='flex gap-5 max-md:flex-col'>
@@ -62,13 +94,19 @@ export const HeroSection = () => {
         >
           <div className='flex grow gap-4 text-base text-black'>
             <div className='flex flex-col w-full'>
-              {NAV_CATEGORIES.map((category) => (
-                <div key={category.href} className='w-full'>
-                  <CategoryItem category={category} />
-                </div>
-              ))}
+              {loading
+                ? [...Array(10)].map((_, i) => (
+                  <div key={i} className='w-full mb-2'>
+                    <Skeleton className='h-8 w-full rounded' />
+                  </div>
+                ))
+                : navCategories.map((category) => (
+                  <div key={category.href} className='w-full'>
+                    <CategoryItem category={category} />
+                  </div>
+                ))}
             </div>
-            <div className='shrink-0 w-px h-96 border border-black border-solid' />
+            <div className='shrink-0 w-px  border border-black border-solid' />
           </div>
         </nav>
 

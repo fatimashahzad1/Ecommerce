@@ -1,12 +1,7 @@
 "use client";
-import { useEffect, useMemo, Suspense } from 'react';
+import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { addProduct, updateProduct, fetchProducts } from '@/store/productSlice';
-import { fetchCategories } from '@/store/categorySlice';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
     Form,
@@ -16,29 +11,25 @@ import {
     FormControl,
     FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import ToggleSwitches from '@/components/admin/products/ToggleSwitches';
+import ImageUpload from '@/components/admin/products/ImageUpload';
+import GalleryUpload from '@/components/admin/products/GalleryUpload';
+import SizeStockSelector from '@/components/admin/products/SizeStockSelector';
+import CategorySelector from '@/components/admin/products/CategorySelector';
+import ColorPicker from '@/components/admin/products/ColorPicker';
+import { uploadToCloudinary } from "@/utils/cloudinary";
+import { SIZE_OPTIONS } from "@/constants";
+import { ADMIN_PRODUCT_FORM_FIELDS } from "@/constants/forms";
+import useAdminProductForm from "@/hooks/useAdminProductForm";
+import AdminCustomFormField from "@/components/admin/products/AdminCustomFormField";
 
-const productSchema = z.object({
-    title: z.string().min(2, 'Title is required'),
-    image: z.string().url('Image URL is required'),
-    price: z.coerce.number().min(0, 'Price is required'),
-    originalPrice: z.coerce.number().optional(),
-    discount: z.coerce.number().optional(),
-    bestSelling: z.boolean().optional(),
-    featured: z.boolean().optional(),
-    rating: z.coerce.number().min(0).max(5),
-    reviewCount: z.coerce.number().min(0),
-    description: z.string().optional(),
-    colors: z.string().optional(), // comma separated
-    sizes: z.string().optional(), // comma separated (size:count)
-    stockStatus: z.enum(['In Stock', 'Out of Stock', 'Limited Stock']).optional(),
-    categoryId: z.string().min(1, 'Category is required'),
-});
-
-type ProductFormData = z.infer<typeof productSchema>;
-
+/**
+ * Admin Add/Edit Product Page
+ * Handles orchestration and form submission for the product form.
+ * All major UI blocks and helpers are modularized.
+ */
 function AddOrEditProductPage() {
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
@@ -49,108 +40,32 @@ function AddOrEditProductPage() {
     const { categories } = useAppSelector((state: import('@/store/store').RootState) => state.categories);
     const { toast } = useToast();
 
-    // Find product if editing
-    const product = useMemo(() => products.find((p) => String(p.id) === id), [products, id]);
-
-    const form = useForm<ProductFormData>({
-        resolver: zodResolver(productSchema),
-        defaultValues: {
-            title: product?.title || '',
-            image: product?.image || '',
-            price: product?.price || 0,
-            originalPrice: product?.originalPrice,
-            discount: product?.discount,
-            bestSelling: product?.bestSelling || false,
-            featured: product?.featured || false,
-            rating: product?.rating || 0,
-            reviewCount: product?.reviewCount || 0,
-            description: product?.description || '',
-            colors: product?.colors?.join(', ') || '',
-            sizes: product?.sizes?.map((s) => `${s.size}:${s.count}`).join(', ') || '',
-            stockStatus: product?.stockStatus,
-        },
-    });
-
-    useEffect(() => {
-        dispatch(fetchCategories());
-        if (!products.length) dispatch(fetchProducts());
-    }, [dispatch, products.length]);
-
-    useEffect(() => {
-        if (product) {
-            form.reset({
-                title: product.title,
-                image: product.image,
-                price: product.price,
-                originalPrice: product.originalPrice,
-                discount: product.discount,
-                bestSelling: product.bestSelling || false,
-                featured: product.featured || false,
-                rating: product.rating,
-                reviewCount: product.reviewCount,
-                description: product.description || '',
-                colors: product.colors?.join(', ') || '',
-                sizes: product.sizes?.map((s) => `${s.size}:${s.count}`).join(', ') || '',
-                stockStatus: product.stockStatus,
-            });
-        }
-    }, [product, form]);
-
-    const onSubmit = async (data: ProductFormData) => {
-        try {
-            if (id && product) {
-                await dispatch(updateProduct({
-                    ...product,
-                    ...data,
-                    colors: data.colors ? data.colors.split(',').map((c) => c.trim()) : undefined,
-                    sizes: data.sizes
-                        ? data.sizes.split(',').map((s) => {
-                            const [size, count] = s.split(':').map((v) => v.trim());
-                            return { size, count: Number(count) };
-                        })
-                        : undefined,
-                })).unwrap();
-                toast({
-                    title: t('admin.editProductSuccess', 'Product updated!'),
-                    description: t('admin.editProductSuccessDesc', 'The product was updated successfully.'),
-                    variant: 'success',
-                });
-            } else {
-                await dispatch(addProduct({
-                    title: data.title,
-                    image: data.image,
-                    price: data.price,
-                    originalPrice: data.originalPrice,
-                    discount: data.discount,
-                    bestSelling: data.bestSelling,
-                    featured: data.featured,
-                    rating: data.rating,
-                    reviewCount: data.reviewCount,
-                    description: data.description,
-                    colors: data.colors ? data.colors.split(',').map((c) => c.trim()) : undefined,
-                    sizes: data.sizes
-                        ? data.sizes.split(',').map((s) => {
-                            const [size, count] = s.split(':').map((v) => v.trim());
-                            return { size, count: Number(count) };
-                        })
-                        : undefined,
-                    stockStatus: data.stockStatus,
-                })).unwrap();
-                toast({
-                    title: t('admin.addProductSuccess', 'Product added!'),
-                    description: t('admin.addProductSuccessDesc', 'The product was added successfully.'),
-                    variant: 'success',
-                });
-            }
-            router.push('/admin/products');
-        } catch (err: any) {
-            toast({
-                title: t('admin.productError', 'Error'),
-                description: err.message || t('admin.productErrorDesc', 'Something went wrong.'),
-                variant: 'destructive',
-            });
-        }
-    };
+    const {
+        form,
+        imageUrl,
+        setImageUrl,
+        uploadProgress,
+        setUploadProgress,
+        uploading,
+        setUploading,
+        fileInputRef,
+        gallery,
+        galleryInputRefs,
+        selectedCategoryId,
+        setSelectedCategoryId,
+        selectedSubcategoryId,
+        setSelectedSubcategoryId,
+        selectedColors,
+        selectedSizes,
+        handleAddColor,
+        handleRemoveColor,
+        handleToggleSize,
+        handleSizeCountChange,
+        handleGalleryFileChange,
+        handleDeleteGalleryImage,
+        onSubmit,
+        MAX_COLORS,
+    } = useAdminProductForm({ t, id, products, categories, dispatch, router, toast });
 
     return (
         <div className="p-8 max-w-xl mx-auto">
@@ -159,159 +74,101 @@ function AddOrEditProductPage() {
             </h1>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-white rounded shadow p-6">
-                    <FormField
-                        control={form.control}
-                        name="title"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>{t('admin.productTitle', 'Product Title')}</FormLabel>
-                                <FormControl>
-                                    <Input {...field} placeholder={t('admin.productTitle', 'Product Title')} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="image"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>{t('admin.productImage', 'Image URL')}</FormLabel>
-                                <FormControl>
-                                    <Input {...field} placeholder={t('admin.productImage', 'Image URL')} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="price"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>{t('admin.productPrice', 'Price')}</FormLabel>
-                                <FormControl>
-                                    <Input type="number" {...field} placeholder={t('admin.productPrice', 'Price')} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="originalPrice"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>{t('admin.productOriginalPrice', 'Original Price')}</FormLabel>
-                                <FormControl>
-                                    <Input type="number" {...field} placeholder={t('admin.productOriginalPrice', 'Original Price')} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="discount"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>{t('admin.productDiscount', 'Discount')}</FormLabel>
-                                <FormControl>
-                                    <Input type="number" {...field} placeholder={t('admin.productDiscount', 'Discount')} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="bestSelling"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>{t('admin.productBestSelling', 'Best Selling')}</FormLabel>
-                                <FormControl>
-                                    <input type="checkbox" checked={field.value} onChange={field.onChange} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="featured"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>{t('admin.productFeatured', 'Featured')}</FormLabel>
-                                <FormControl>
-                                    <input type="checkbox" checked={field.value} onChange={field.onChange} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="rating"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>{t('admin.productRating', 'Rating')}</FormLabel>
-                                <FormControl>
-                                    <Input type="number" step="0.1" min="0" max="5" {...field} placeholder={t('admin.productRating', 'Rating')} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="reviewCount"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>{t('admin.productReviewCount', 'Review Count')}</FormLabel>
-                                <FormControl>
-                                    <Input type="number" {...field} placeholder={t('admin.productReviewCount', 'Review Count')} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>{t('admin.productDescription', 'Description')}</FormLabel>
-                                <FormControl>
-                                    <Input {...field} placeholder={t('admin.productDescription', 'Description')} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                    {ADMIN_PRODUCT_FORM_FIELDS.map(field => {
+                        if (field.isCustom) return (
+                            <FormField
+                                key={field.name}
+                                control={form.control}
+                                name="image"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-base font-medium">{t('admin.productImage', 'Image')}</FormLabel>
+                                        <FormControl>
+                                            <ImageUpload
+                                                value={imageUrl}
+                                                onChange={url => {
+                                                    setImageUrl(url);
+                                                    form.setValue('image', url, { shouldValidate: true });
+                                                }}
+                                                onUpload={async (file) => {
+                                                    try {
+                                                        const url = await uploadToCloudinary(file, setUploadProgress, setUploading);
+                                                        setImageUrl(url);
+                                                        form.setValue('image', url, { shouldValidate: true });
+                                                    } catch (err: any) {
+                                                        toast({
+                                                            title: t('admin.productError', 'Error'),
+                                                            description: err?.message ?? t('admin.productImageUploadError', 'Image upload failed.'),
+                                                            variant: 'destructive',
+                                                        });
+                                                    }
+                                                }}
+                                                onDelete={() => {
+                                                    setImageUrl('');
+                                                    form.setValue('image', '', { shouldValidate: true });
+                                                    if (fileInputRef.current) fileInputRef.current.value = '';
+                                                }}
+                                                uploading={uploading}
+                                                progress={uploadProgress}
+                                                error={form.formState.errors.image?.message as string}
+                                                t={t}
+                                            />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                        );
+                        return (
+                            <AdminCustomFormField
+                                key={field.name}
+                                control={form.control}
+                                name={field.name}
+                                label={t(field.labelKey, field.defaultLabel)}
+                                type={field.type}
+                                placeholder={field.defaultLabel}
+                                step={field.step}
+                                min={field.min}
+                                max={field.max}
+                                t={t}
+                            />
+                        );
+                    })}
+                    <ToggleSwitches control={form.control} t={t} />
                     <FormField
                         control={form.control}
                         name="colors"
-                        render={({ field }) => (
+                        render={() => (
                             <FormItem>
-                                <FormLabel>{t('admin.productColors', 'Colors')}</FormLabel>
+                                <FormLabel className="text-base font-medium">{t('admin.productColors', 'Colors')}</FormLabel>
                                 <FormControl>
-                                    <Input {...field} placeholder={t('admin.productColors', 'Comma separated colors')} />
+                                    <ColorPicker
+                                        selectedColors={selectedColors}
+                                        onAddColor={handleAddColor}
+                                        onRemoveColor={handleRemoveColor}
+                                        maxColors={MAX_COLORS}
+                                        t={t}
+                                    />
                                 </FormControl>
-                                <FormMessage />
+                                <FormMessage className="text-sm text-red-500 mt-1" />
                             </FormItem>
                         )}
                     />
                     <FormField
                         control={form.control}
                         name="sizes"
-                        render={({ field }) => (
+                        render={() => (
                             <FormItem>
-                                <FormLabel>{t('admin.productSizes', 'Sizes')}</FormLabel>
+                                <FormLabel className="text-base font-medium">{t('admin.productSizes', 'Sizes')}</FormLabel>
                                 <FormControl>
-                                    <Input {...field} placeholder={t('admin.productSizes', 'Comma separated (e.g. S:10, M:5)')} />
+                                    <SizeStockSelector
+                                        selectedSizes={selectedSizes}
+                                        onToggleSize={handleToggleSize}
+                                        onSizeCountChange={handleSizeCountChange}
+                                        sizeOptions={SIZE_OPTIONS}
+                                        t={t}
+                                    />
                                 </FormControl>
-                                <FormMessage />
+                                <FormMessage className="text-sm text-red-500 mt-1" />
                             </FormItem>
                         )}
                     />
@@ -320,25 +177,43 @@ function AddOrEditProductPage() {
                         name="stockStatus"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>{t('admin.productStockStatus', 'Stock Status')}</FormLabel>
+                                <FormLabel className="text-base font-medium">{t('admin.productStockStatus', 'Stock Status')}</FormLabel>
                                 <FormControl>
-                                    <select {...field} className="w-full border rounded px-3 py-2">
+                                    <select {...field} className="w-full rounded text-base bg-neutral-100 px-4 py-[13px] border-none">
                                         <option value="">{t('admin.productStockStatus', 'Select stock status')}</option>
                                         <option value="In Stock">{t('admin.inStock', 'In Stock')}</option>
                                         <option value="Out of Stock">{t('admin.outOfStock', 'Out of Stock')}</option>
                                         <option value="Limited Stock">{t('admin.limitedStock', 'Limited Stock')}</option>
                                     </select>
                                 </FormControl>
-                                <FormMessage />
+                                <FormMessage className="text-sm text-red-500 mt-1" />
                             </FormItem>
                         )}
                     />
-                    <Button type="submit" className="w-full" disabled={loading}>
-                        {loading
-                            ? t('admin.saving', 'Saving...')
-                            : id
-                                ? t('admin.saveProduct', 'Save Changes')
-                                : t('admin.saveProduct', 'Save Product')}
+                    <CategorySelector
+                        categories={categories}
+                        selectedCategoryId={selectedCategoryId}
+                        selectedSubcategoryId={selectedSubcategoryId}
+                        onCategoryChange={id => {
+                            setSelectedCategoryId(id);
+                            setSelectedSubcategoryId("");
+                        }}
+                        onSubcategoryChange={setSelectedSubcategoryId}
+                        categoryError={form.formState.errors.categoryId?.message as string}
+                        subcategoryError={form.formState.errors.subcategoryId?.message as string}
+                        t={t}
+                    />
+                    <GalleryUpload
+                        gallery={gallery}
+                        onUpload={handleGalleryFileChange}
+                        onDelete={handleDeleteGalleryImage}
+                        t={t}
+                        inputRefs={galleryInputRefs}
+                    />
+                    <Button type="submit" disabled={loading} className="w-full text-neutral-50 rounded text-base font-medium bg-[#DB4444] px-12 py-4 hover:bg-[#c13e3e]" >
+                        {id
+                            ? t('admin.saveProduct', 'Save Changes')
+                            : t('admin.saveProduct', 'Save Product')}
                     </Button>
                     {error && <p className="text-red-500 text-sm">{error}</p>}
                 </form>

@@ -8,3 +8,4 @@ export interface IconProps {
 export type Language = 'English' | 'Français';
 
 export * from './categories';
+export * from './user';

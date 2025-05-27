@@ -1,6 +1,4 @@
-import { Product } from '@/types/products';
-
-export const PRODUCTS: Product[] = [
+export const PRODUCTS = [
   {
     id: '1',
     image:

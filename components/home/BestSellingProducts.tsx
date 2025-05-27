@@ -6,6 +6,7 @@ import { Slider } from '@/components/ui/slider';
 import Link from 'next/link';
 import { ROUTE_LINKS } from '@/constants/routes';
 import { useAppSelector } from "@/hooks/useRedux";
+import { ProductCardSkeleton } from "../skeleton/ProductCardSkeleton";
 
 /**
  * BestSellingProducts Component
@@ -15,7 +16,8 @@ export const BestSellingProducts: React.FC = () => {
   const { products, loading, error } = useAppSelector((state) => state.products);
 
 
-  if (loading) return <p>Loading products...</p>;
+
+
   if (error) return <p>{error}</p>;
 
   return (
@@ -42,6 +44,8 @@ export const BestSellingProducts: React.FC = () => {
           </Link>
         }
       >
+
+        {loading && [...Array(5)].map((_, i) => <ProductCardSkeleton key={i} />)}
         {products?.map((product, index) => {
           if (!product.bestSelling) return null; // Skip if not best selling
           return (

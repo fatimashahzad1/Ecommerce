@@ -6,6 +6,7 @@ import { SectionHeader } from '@/components/ui/section-header';
 import Link from 'next/link';
 import { ROUTE_LINKS } from '@/constants/routes';
 import { useAppSelector } from "@/hooks/useRedux";
+import { ProductCardSkeleton } from "../skeleton/ProductCardSkeleton"; // adjust path as needed
 
 
 /**
@@ -13,6 +14,25 @@ import { useAppSelector } from "@/hooks/useRedux";
  */
 export const FeaturedSection = () => {
   const { products, loading, error } = useAppSelector((state) => state.products);
+
+  let content;
+  if (loading) {
+    content = [...Array(8)].map((_, i) => <ProductCardSkeleton key={i} />);
+  } else if (error) {
+    content = <div className="w-full flex justify-center items-center h-32 text-red-500">{error}</div>;
+  } else {
+    content = products
+      .filter(product => product.featured)
+      .map((product, index) => (
+        <ProductCard
+          key={`featured-${product.title}`}
+          {...product}
+          testid='featured'
+          index={index}
+        />
+      ));
+  }
+
   return (
     <section
       className='w-full mt-36 max-md:mt-10'
@@ -26,24 +46,7 @@ export const FeaturedSection = () => {
         role='grid'
         aria-label='Featured products grid'
       >
-        {loading ? (
-          <div className="w-full flex justify-center items-center h-32">Loading...</div>
-        ) : error ? (
-          <div className="w-full flex justify-center items-center h-32 text-red-500">{error}</div>
-        ) : (
-          products.map((product, index) => {
-            if (!product.featured) return null; // Skip if not featured
-            return (
-              <ProductCard
-                key={`featured-${product.title}`}
-                {...product}
-                testid='featured'
-                index={index}
-              />
-            );
-          })
-        )}
-
+        {content}
       </div>
 
       <div className='flex justify-center w-full'>
