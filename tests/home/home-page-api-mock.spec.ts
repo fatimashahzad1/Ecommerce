@@ -4,7 +4,7 @@ import { NavbarPage } from '../pages/NavbarPage';
 import { getRouteUrl } from '../utils/helper-functions';
 import { testRoutes } from '../utils/test-data';
 import { mockCategories, mockCategoriesEmpty } from '../mocks/categories';
-import { mockProducts, mockProductsEmpty } from '../mocks/products';
+import { mockProducts } from '../mocks/products';
 import { mockApiRoutes } from '../mocks/api/home';
 
 // Home Page Test Suite
@@ -53,7 +53,7 @@ test.describe('Home Page', () => {
   test('TC-038: Verify Featured Products Section Displays Products (fail - section empty)', async ({
     page,
   }) => {
-    await mockApiRoutes(page, { products: mockProductsEmpty });
+    await mockApiRoutes(page, { products: [] });
     await homePage.goto(getRouteUrl(testRoutes.home));
     await homePage.scrollToProducts(true);
     const cards = await homePage.getProductCards();
