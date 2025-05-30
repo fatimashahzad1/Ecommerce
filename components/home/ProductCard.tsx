@@ -13,7 +13,7 @@ interface ProductCardProps {
   id: number | string;
   image: string;
   title: string;
-  price: number;
+  price: number | string;
   originalPrice?: number;
   rating: number;
   reviewCount: number;
@@ -80,7 +80,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         />
 
         {/* Discount Badge */}
-        {discount && (
+        {Boolean(discount) && (
           <div className='absolute top-3 left-3 bg-red-500 text-white text-xs font-medium px-3 py-1 rounded'>
             -{discount}%
           </div>
@@ -123,7 +123,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <h3 className='font-medium text-base'>{title}</h3>
         <div className='flex gap-3 items-center'>
           <span className='text-red-500 font-medium'>${price}</span>
-          {originalPrice && (
+          {Boolean(originalPrice) && (
             <span className='text-black text-opacity-50 line-through'>
               ${originalPrice}
             </span>

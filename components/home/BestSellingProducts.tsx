@@ -15,7 +15,7 @@ import { ProductCardSkeleton } from "../skeleton/ProductCardSkeleton";
 export const BestSellingProducts: React.FC = () => {
   const { products, loading, error } = useAppSelector((state) => state.products);
 
-
+  const filteredProducts = products?.filter((product) => product.bestSelling).slice(0, 5);
 
 
   if (error) return <p>{error}</p>;
@@ -46,8 +46,7 @@ export const BestSellingProducts: React.FC = () => {
       >
 
         {loading && [...Array(5)].map((_, i) => <ProductCardSkeleton key={i} />)}
-        {products?.map((product, index) => {
-          if (!product.bestSelling) return null; // Skip if not best selling
+        {filteredProducts?.map((product, index) => {
           return (
             <ProductCard
               key={`best-selling-${product.title}`}

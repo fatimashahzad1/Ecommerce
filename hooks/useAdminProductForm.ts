@@ -84,15 +84,11 @@ function useAdminProductForm({
   // Sync form.categoryId with selectedCategoryId/subcategoryId
   useEffect(() => {
     if (selectedSubcategoryId) {
-      form.setValue('categoryId', selectedSubcategoryId, {
-        shouldValidate: true,
-      });
+      form.setValue('subcategoryId', selectedSubcategoryId);
     } else if (selectedCategoryId) {
-      form.setValue('categoryId', selectedCategoryId, { shouldValidate: true });
-    } else {
-      form.setValue('categoryId', '', { shouldValidate: true });
+      form.setValue('categoryId', selectedCategoryId);
     }
-  }, [selectedCategoryId, selectedSubcategoryId]);
+  }, [form, selectedCategoryId, selectedSubcategoryId]);
 
   // Handle gallery image upload
   const handleGalleryFileChange = async (

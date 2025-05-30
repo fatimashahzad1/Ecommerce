@@ -74,11 +74,11 @@ export const HeroSection = () => {
         .sort((a, b) => a.name.localeCompare(b.name))
         .map((sub) => ({
           name: sub.name,
-          href: `/products/all?category=${parentSlug}&subCategory=${slugify(sub.name)}`,
+          href: `/products/all?subCategory=${sub.id}`,
         }));
       return {
         name: cat.name,
-        href: `/products/all?category=${parentSlug}`,
+        href: `/products/all?category=${cat.id}`,
         hasSubmenu: subCategories.length > 0,
         subCategories: subCategories.length > 0 ? subCategories : undefined,
       };

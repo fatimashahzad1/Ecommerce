@@ -48,7 +48,10 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
                 <label className="text-base font-medium block mb-1">{t('admin.productSubcategory', { defaultValue: 'Subcategory' })}</label>
                 <select
                     value={selectedSubcategoryId}
-                    onChange={e => onSubcategoryChange(e.target.value)}
+                    onChange={e => {
+                        console.log("e.target.value", e.target.value)
+                        onSubcategoryChange(e.target.value)
+                    }}
                     className="w-full rounded text-base bg-neutral-100 px-4 py-[13px] border-none"
                     disabled={subcategories.length === 0}
                 >

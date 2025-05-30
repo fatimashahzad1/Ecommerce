@@ -4,17 +4,18 @@ import React from 'react';
 import { ProductCard } from './ProductCard';
 import { Timer } from './Timer';
 import { Slider } from '@/components/ui/slider';
-import Link from 'next/link';
 import { ROUTE_LINKS } from '@/constants/routes';
 import { useAppSelector } from '@/hooks/useRedux';
 import { ProductCardSkeleton } from "../skeleton/ProductCardSkeleton";
-
+import { Button } from "../ui/button";
+import { useRouter } from 'next/navigation';
 /**
  * FlashSales Component
  * Displays flash sale products with countdown timer and navigation arrows
  */
 export const FlashSales: React.FC = () => {
   const { products, loading, error } = useAppSelector((state) => state.products);
+  const router = useRouter();
 
   let content;
   if (loading) {
@@ -24,6 +25,7 @@ export const FlashSales: React.FC = () => {
   } else {
     content = products
       ?.filter(product => product.discount)
+      .slice(0, 5)
       .map((product, index) => (
         <ProductCard key={`flash-sale-${product.title}`} index={index} testid='flash-sale' {...product} />
       ));
@@ -48,14 +50,16 @@ export const FlashSales: React.FC = () => {
       </Slider>
 
       <div className='flex justify-center w-full'>
-        <Link
-          href={ROUTE_LINKS.flashSaleProducts}
+        <Button
+          variant="destructive"
+          size="lg"
           className='px-12 py-4 mt-16 text-base h-14 font-medium bg-red-500 rounded text-neutral-50 hover:bg-red-600 transition-colors max-md:px-5 max-md:mt-10'
-          aria-label='View all flash sale products'
-          prefetch={false}
+          disabled={loading}
+          onClick={() => router.push(ROUTE_LINKS.flashSaleProducts)}
         >
           View All Products
-        </Link>
+        </Button>
+
       </div>
 
       <hr

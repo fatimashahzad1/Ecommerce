@@ -14,6 +14,7 @@ import { ProductCardSkeleton } from "../skeleton/ProductCardSkeleton"; // adjust
  */
 export const FeaturedSection = () => {
   const { products, loading, error } = useAppSelector((state) => state.products);
+  const filteredProducts = products?.filter((product) => product.featured).slice(0, 8);
 
   let content;
   if (loading) {
@@ -21,8 +22,7 @@ export const FeaturedSection = () => {
   } else if (error) {
     content = <div className="w-full flex justify-center items-center h-32 text-red-500">{error}</div>;
   } else {
-    content = products
-      .filter(product => product.featured)
+    content = filteredProducts
       .map((product, index) => (
         <ProductCard
           key={`featured-${product.title}`}

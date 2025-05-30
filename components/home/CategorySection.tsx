@@ -43,7 +43,7 @@ export const CategorySection: React.FC = () => {
           Icon={getIconComponent(category)}
           name={category.name}
           className='flex-shrink-0 w-[170px]'
-          link={`${ROUTE_LINKS.allProducts}?category=${encodeURIComponent(category.name.toLowerCase())}`}
+          link={`${ROUTE_LINKS.allProducts}?category=${category.id}`}
         />
       ));
   }
