@@ -31,7 +31,7 @@ const WishList = () => {
           ...item,
           _id: item.id, // Assuming `id` in Product corresponds to `_id` in CartItem
           quantity: 1, // Default quantity
-          subtotal: item.price, // Assuming `price` exists in Product
+          subtotal: Number(item.price), // Assuming `price` exists in Product
         })
       );
     });
