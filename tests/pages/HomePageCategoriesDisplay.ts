@@ -33,8 +33,8 @@ export class HomePage {
     );
   }
 
-  async navigate() {
-    await this.page.goto('https://ecommerce-omega-three-23.vercel.app/');
+  async navigate(fail: boolean = false) {
+    await this.page.goto(`http://localhost:3000/?fail=${fail}`);
   }
 
   async getCategoryCardByName(name: string): Promise<Locator> {
